@@ -3,8 +3,11 @@ require 'centurion/docker_server'
 require 'centurion/docker_server_group'
 
 describe Centurion::DockerServerGroup do
-  let(:docker_path) { 'docker' }
-  let(:group) { Centurion::DockerServerGroup.new(['host1', 'host2'], docker_path) }
+  let(:docker_path) { 'docker' }  
+  let(:group) { Centurion::DockerServerGroup.new([
+    { hostname: 'host1' }, 
+    { hostname: 'host2' }
+  ], docker_path) }
 
   it 'takes a hostlist and instantiates DockerServers' do
     expect(group.hosts.length).to equal(2)

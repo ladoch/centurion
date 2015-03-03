@@ -122,6 +122,10 @@ module Centurion::Deploy
     container_config.merge!('CpuShares' => cpu_shares) if cpu_shares
 
     if port_bindings
+      if target_server.options[:host_ports]
+        port_bindings = port_bindings.merge target_server.options[:host_ports] 
+      end
+
       container_config['ExposedPorts'] ||= {}
       port_bindings.keys.each do |port|
         container_config['ExposedPorts'][port] = {}
@@ -129,6 +133,10 @@ module Centurion::Deploy
     end
 
     if env_vars
+      if target_server.options[:env_vars]
+        env_vars = env_vars.merge target_server.options[:env_vars] 
+      end
+
       container_config['Env'] = env_vars.map do |k,v|
         "#{k}=#{v.gsub('%DOCKER_HOSTNAME%', target_server.hostname)}"
       end

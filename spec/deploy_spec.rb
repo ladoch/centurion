@@ -6,7 +6,7 @@ require 'centurion/logging'
 describe Centurion::Deploy do
   let(:mock_ok_status)  { double('http_status_ok', status: 200) }
   let(:mock_bad_status) { double('http_status_ok', status: 500) }
-  let(:server)          { double('docker_server', attach: true, hostname: hostname) }
+  let(:server)          { double('docker_server', attach: true, hostname: hostname, options: {}) }
   let(:port)            { 8484 }
   let(:container)       { { 'Ports' => [{ 'PublicPort' => port }, 'Created' => Time.now.to_i ], 'Id' => '21adfd2ef2ef2349494a', 'Names' => [ 'name1' ] } }
   let(:endpoint)        { '/status/check' }

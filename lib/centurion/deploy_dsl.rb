@@ -14,9 +14,16 @@ module Centurion::DeployDSL
     set(:env_vars, current)
   end
 
-  def host(hostname)
+  def host(hostname, options = {})
+    validate_options_keys(options, [ :env_vars, :host_ports ])
+
+    host = {
+      hostname: hostname,
+      options: options 
+    }
+
     current = fetch(:hosts, [])
-    current << hostname
+    current << host
     set(:hosts, current)
   end
 

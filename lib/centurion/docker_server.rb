@@ -11,7 +11,7 @@ class Centurion::DockerServer
   include Centurion::Logging
   extend Forwardable
 
-  attr_reader :hostname, :port
+  attr_reader :hostname, :port, :options
 
   def_delegators :docker_via_api, :create_container, :inspect_container,
                  :inspect_image, :ps, :start_container, :stop_container,
@@ -20,9 +20,10 @@ class Centurion::DockerServer
 
   def initialize(host, docker_path, tls_params = {})
     @docker_path = docker_path
-    @hostname, @port = host.split(':')
+    @hostname, @port = host[:hostname].split(':')
     @port ||= '2375'
     @tls_params = tls_params
+    @options = host[:options]
   end
 
   def current_tags_for(image)
