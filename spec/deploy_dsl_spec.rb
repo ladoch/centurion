@@ -56,6 +56,18 @@ describe Centurion::DeployDSL do
     ])
   end
 
+  it 'adds hosts with options to the host list' do
+    DeployDSLTest.set(:hosts, [ 
+      { hostname: 'host1', options: {} }
+    ])
+    DeployDSLTest.host 'host2', env_vars: { var1: 'test' }
+
+    expect(DeployDSLTest).to have_key_and_value(:hosts, [
+      { hostname: 'host1', options: {} },
+      { hostname: 'host2', options: { env_vars: { var1: 'test' } } }
+    ])
+  end
+
   describe '#localhost' do
     it 'adds a host by reading DOCKER_HOST if present' do
       expect(ENV).to receive(:[]).with('DOCKER_HOST').and_return('tcp://127.1.1.1:4240')
