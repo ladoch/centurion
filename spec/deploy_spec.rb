@@ -271,7 +271,7 @@ describe Centurion::Deploy do
 
   describe '#start_container_with_config' do
     let(:bindings) { {'80/tcp'=>[{'HostIp'=>'0.0.0.0', 'HostPort'=>'80'}]} }
-    let(:options) { { host_ports: {'443/tcp'=>[{'HostIp'=>'10.123.34.5', 'HostPort'=>'443'}]} } }
+    let(:options) { { port_bindings: {'443/tcp'=>[{'HostIp'=>'10.123.34.5', 'HostPort'=>'443'}]} } }
 
     it 'pass host_config to start_container' do
       allow(server).to receive(:container_config_for).and_return({
@@ -291,7 +291,7 @@ describe Centurion::Deploy do
       expect(server).to receive(:start_container).with(
         'abc123456',
         {
-          'PortBindings' => bindings.merge(options[:host_ports]),
+          'PortBindings' => bindings.merge(options[:port_bindings]),
           'Dns' => '8.8.8.8',
           'RestartPolicy' => {
             'Name' => 'on-failure',

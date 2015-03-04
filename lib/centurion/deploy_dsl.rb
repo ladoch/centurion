@@ -14,12 +14,10 @@ module Centurion::DeployDSL
     set(:env_vars, current)
   end
 
-  def host(hostname, options = {})
-    validate_options_keys(options, [ :env_vars, :host_ports ])
-
+  def host(hostname, options = {}) 
     host = {
       hostname: hostname,
-      options: options 
+      options: host_options(options)
     }
 
     current = fetch(:hosts, [])
@@ -94,13 +92,43 @@ module Centurion::DeployDSL
     Centurion::DockerServerGroup.new(hosts, docker_path, build_tls_params)
   end
 
-  def add_to_bindings(host_ip, container_port, port, type='tcp')
-    set(:port_bindings, fetch(:port_bindings, {}).tap do |bindings|
-      binding = { 'HostPort' => port.to_s }.tap do |b|
+  def host_options(options = {})
+    validate_options_keys(options, [ :env_vars, :port_bindings ])
+
+    return {}.tap do |hostOptions|
+      hostOptions[:env_vars] = options[:env_vars] if options[:env_vars]
+
+      if options[:port_bindings]
+        validate_options_keys(options[:port_bindings], [ :container_port, :port, :type, :host_ip ])
+        require_options_keys(options[:port_bindings], [ :container_port, :port ])
+
+        hostOptions[:port_bindings] = port_bindings = {}
+        options[:port_bindings].each do |port, params|
+          binding = host_port_binding_from(
+            params[:host_ip],
+            params[:container_port],
+            port,
+            params[:type] || 'tcp'
+          )
+
+          port_bindings[binding[:container_port]] = [ binding[:binding] ]
+        end
+      end
+    end
+  end
+
+  def host_port_binding_from(host_ip, container_port, port, type='tcp')
+    return { container_port: "#{container_port.to_s}/#{type}" }.tap do |binding|
+      binding[:binding] = { 'HostPort' => port.to_s }.tap do |b|
         b['HostIp'] = host_ip if host_ip
       end
-      bindings["#{container_port.to_s}/#{type}"] = [ binding ]
-      bindings
+    end
+  end
+
+  def add_to_bindings(host_ip, container_port, port, type='tcp')
+    set(:port_bindings, fetch(:port_bindings, {}).tap do |bindings|
+      binding = host_port_binding_from(host_ip, container_port, port, type)
+      bindings[binding[:container_port]] = [ binding[:binding] ]
     end)
   end
 

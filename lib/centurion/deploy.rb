@@ -150,8 +150,8 @@ module Centurion::Deploy
   end
 
   def start_new_container(target_server, image_id, port_bindings, volumes, env_vars=nil, command=nil, memory=nil, cpu_shares=nil)
-    if target_server.options[:host_ports]
-      port_bindings = port_bindings.merge target_server.options[:host_ports] 
+    if target_server.options[:port_bindings]
+      port_bindings = port_bindings.merge target_server.options[:port_bindings] 
     end
 
     container_config = container_config_for(target_server, image_id, port_bindings, env_vars, volumes, command, memory, cpu_shares)
