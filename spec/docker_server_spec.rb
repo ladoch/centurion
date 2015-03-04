@@ -2,7 +2,8 @@ require 'spec_helper'
 require 'centurion/docker_server'
 
 describe Centurion::DockerServer do
-  let(:host)   { 'host1' }
+  let(:options) { { env_vars: { var1: 'test' } } }
+  let(:host)   { { hostname: 'host1', options: options } }
   let(:docker_path) { 'docker' }
   let(:server) { Centurion::DockerServer.new(host, docker_path) }
   let(:container) {
@@ -26,8 +27,12 @@ describe Centurion::DockerServer do
     expect(server.port).to eq('2375')
   end
 
+  it 'knows its options' do
+    expect(server.options).to eq(options)
+  end
+
   describe 'when host includes a port' do
-    let(:host) { 'host2:4321' }
+    let(:host) { { hostname: 'host2:4321' } }
     it 'knows that port' do
       expect(server.port).to eq('4321')
     end

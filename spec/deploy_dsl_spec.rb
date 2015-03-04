@@ -18,7 +18,11 @@ describe Centurion::DeployDSL do
     expect(recipient).to receive(:ping).with('host1')
     expect(recipient).to receive(:ping).with('host2')
 
-    DeployDSLTest.set(:hosts, %w{ host1 host2 })
+    DeployDSLTest.set(:hosts, [
+      { hostname: 'host1' },
+      { hostname: 'host2' }
+    ])
+
     DeployDSLTest.on_each_docker_host { |h| recipient.ping(h.hostname) }
   end
 
@@ -41,23 +45,40 @@ describe Centurion::DeployDSL do
   end
 
   it 'adds hosts to the host list' do
-    DeployDSLTest.set(:hosts, [ 'host1' ])
+    DeployDSLTest.set(:hosts, [ 
+      { hostname: 'host1', options: {} }
+    ])
     DeployDSLTest.host('host2')
 
-    expect(DeployDSLTest).to have_key_and_value(:hosts, %w{ host1 host2 })
+    expect(DeployDSLTest).to have_key_and_value(:hosts, [
+      { hostname: 'host1', options: {} },
+      { hostname: 'host2', options: {} }
+    ])
+  end
+
+  it 'adds hosts with options to the host list' do
+    DeployDSLTest.set(:hosts, [ 
+      { hostname: 'host1', options: {} }
+    ])
+    DeployDSLTest.host 'host2', env_vars: { var1: 'test' }
+
+    expect(DeployDSLTest).to have_key_and_value(:hosts, [
+      { hostname: 'host1', options: {} },
+      { hostname: 'host2', options: { env_vars: { var1: 'test' } } }
+    ])
   end
 
   describe '#localhost' do
     it 'adds a host by reading DOCKER_HOST if present' do
       expect(ENV).to receive(:[]).with('DOCKER_HOST').and_return('tcp://127.1.1.1:4240')
       DeployDSLTest.localhost
-      expect(DeployDSLTest).to have_key_and_value(:hosts, %w[ 127.1.1.1:4240 ])
+      expect(DeployDSLTest).to have_key_and_value(:hosts, [ { hostname: '127.1.1.1:4240', options: {} } ])
     end
 
     it 'adds a host defaulting to loopback if DOCKER_HOST is not present' do
       expect(ENV).to receive(:[]).with('DOCKER_HOST').and_return(nil)
       DeployDSLTest.localhost
-      expect(DeployDSLTest).to have_key_and_value(:hosts, %w[ 127.0.0.1 ])
+      expect(DeployDSLTest).to have_key_and_value(:hosts, [ { hostname: '127.0.0.1', options: {} } ])
     end
   end
 
@@ -116,8 +137,8 @@ describe Centurion::DeployDSL do
 
   it 'gets current tags for an image' do
     allow_any_instance_of(Centurion::DockerServer).to receive(:current_tags_for).and_return([ 'foo' ])
-    DeployDSLTest.set(:hosts, [ 'host1' ])
 
+    DeployDSLTest.set(:hosts, [ { hostname: 'host1' } ])    
     expect(DeployDSLTest.get_current_tags_for('asdf')).to eq [ { server: 'host1', tags: [ 'foo'] } ]
   end
 end

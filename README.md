@@ -107,8 +107,8 @@ would go into `config/centurion/radio-radio.rake`:
 namespace :environment do
   task :common do
     set :image, 'example.com/newrelic/radio-radio'
-    host 'docker-server-1.example.com'
-    host 'docker-server-2.example.com'
+    host 'docker-server-1.example.com', port_bindings: { 80: { container_port: 8080, host_ip: '10.232.78.43' } }
+    host 'docker-server-2.example.com', env_vars: { MASTER: true }
   end
 
   desc 'Staging environment'

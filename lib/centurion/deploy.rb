@@ -129,6 +129,10 @@ module Centurion::Deploy
     end
 
     if env_vars
+      if target_server.options[:env_vars]
+        env_vars = env_vars.merge target_server.options[:env_vars] 
+      end
+
       container_config['Env'] = env_vars.map do |k,v|
         "#{k}=#{v.gsub('%DOCKER_HOSTNAME%', target_server.hostname)}"
       end
@@ -146,6 +150,10 @@ module Centurion::Deploy
   end
 
   def start_new_container(target_server, image_id, port_bindings, volumes, env_vars=nil, command=nil, memory=nil, cpu_shares=nil)
+    if target_server.options[:port_bindings]
+      port_bindings = port_bindings.merge target_server.options[:port_bindings] 
+    end
+
     container_config = container_config_for(target_server, image_id, port_bindings, env_vars, volumes, command, memory, cpu_shares)
     start_container_with_config(target_server, volumes, port_bindings, container_config)
   end

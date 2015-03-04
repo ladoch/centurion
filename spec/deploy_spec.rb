@@ -6,7 +6,8 @@ require 'centurion/logging'
 describe Centurion::Deploy do
   let(:mock_ok_status)  { double('http_status_ok', status: 200) }
   let(:mock_bad_status) { double('http_status_ok', status: 500) }
-  let(:server)          { double('docker_server', attach: true, hostname: hostname) }
+  let(:options) { {} }
+  let(:server)          { double('docker_server', attach: true, hostname: hostname, options: options) }
   let(:port)            { 8484 }
   let(:container)       { { 'Ports' => [{ 'PublicPort' => port }, 'Created' => Time.now.to_i ], 'Id' => '21adfd2ef2ef2349494a', 'Names' => [ 'name1' ] } }
   let(:endpoint)        { '/status/check' }
@@ -193,6 +194,26 @@ describe Centurion::Deploy do
       end
     end
 
+    context 'when env vars are specified per host' do
+      let(:env) { { 'FOO' => 'BAR', 'BAZ' => '%DOCKER_HOSTNAME%.example.com' } }
+      let(:options) { { env_vars: {'FOO' => 'BAR1', 'TEST' => 'VAL'} } }
+
+      it 'sets the Env key in the config from host options' do
+        config = test_deploy.container_config_for(server, image_id, port_bindings, env)
+
+        expect(config).to be_a(Hash)
+        expect(config.keys).to match_array(%w{ Hostname Image Env })
+        expect(config['Env']).to include('FOO=BAR1')
+        expect(config['Env']).to include('TEST=VAL')
+      end
+
+      it 'interpolates the hostname into env_vars' do
+        config = test_deploy.container_config_for(server, image_id, port_bindings, env)
+
+        expect(config['Env']).to include('BAZ=host1.example.com')
+      end
+    end
+
     context 'when volumes are specified' do
       let(:volumes) { ["/tmp/foo:/tmp/chaucer"] }
 
@@ -250,6 +271,7 @@ describe Centurion::Deploy do
 
   describe '#start_container_with_config' do
     let(:bindings) { {'80/tcp'=>[{'HostIp'=>'0.0.0.0', 'HostPort'=>'80'}]} }
+    let(:options) { { port_bindings: {'443/tcp'=>[{'HostIp'=>'10.123.34.5', 'HostPort'=>'443'}]} } }
 
     it 'pass host_config to start_container' do
       allow(server).to receive(:container_config_for).and_return({
@@ -269,7 +291,7 @@ describe Centurion::Deploy do
       expect(server).to receive(:start_container).with(
         'abc123456',
         {
-          'PortBindings' => bindings,
+          'PortBindings' => bindings.merge(options[:port_bindings]),
           'Dns' => '8.8.8.8',
           'RestartPolicy' => {
             'Name' => 'on-failure',
