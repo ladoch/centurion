@@ -112,6 +112,17 @@ namespace :deploy do
 
   task :rolling_deploy do
     on_each_docker_host do |server|
+      if before_stop_hook = fetch(:rolling_deploy_before_stop)
+        invoke(
+          before_stop_hook, 
+          server.hostname,
+          server.port,
+          server.options
+        ) 
+
+        wait_for_load_balancer_check_interval        
+      end
+
       stop_containers(server, fetch(:port_bindings), fetch(:stop_timeout, 30))
 
       start_new_container(
@@ -140,6 +151,15 @@ namespace :deploy do
           fetch(:rolling_deploy_wait_time, 5),
           fetch(:rolling_deploy_retries, 24)
         )
+      end
+
+      if after_start_hook = fetch(:rolling_deploy_after_start)
+        invoke(
+          after_start_hook,
+          server.hostname,
+          server.port,
+          server.options
+        ) 
       end
 
       wait_for_load_balancer_check_interval
