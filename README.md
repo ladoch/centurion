@@ -282,6 +282,25 @@ are the same everywhere. Settings are per-project.
    ports are not HTTP services, this allows you to only health check the ports 
    that are. The default is an empty array.
 
+You can add hooks to rolling deployment workflow. For example you can update 
+load-balancer config or register/unregiister service in **etcd** before stop/after 
+start of container. Hooks are rake tasks, for example:
+
+```ruby
+namespace :hooks do
+  task :before_stop, [:host, :port, :options] do
+    # do something
+  end
+end
+```
+
+Use following settings to link rolling deployment task with hooks:
+
+  * `rolling_deploy_before_stop` => Name of task to invoke before stopping of container. 
+    If specified, then centurion will wait for `rolling_deploy_check_interval` after 
+    hook invoking.
+  * `rolling_deploy_after_start` => Name of task to invoke after container started. 
+
 ###Deploy a project to a fleet of Docker servers
 
 This will hard stop, then start containers on all the specified hosts. This
