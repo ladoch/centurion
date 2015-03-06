@@ -42,14 +42,14 @@ describe Centurion::DockerViaCli do
     end
   end
   context 'with TLS certificates' do
-    let(:tls_args) { { tls: true, tlscacert: '/certs/ca.pem',
+    let(:tls_args) { { tlsverify: true, tlscacert: '/certs/ca.pem',
                        tlscert: '/certs/cert.pem', tlskey: '/certs/key.pem' } }
     let(:docker_via_cli) { Centurion::DockerViaCli.new('host1', 2375,
                                                        docker_path, tls_args) }
     it 'pulls the latest image given its name' do
       expect(docker_via_cli).to receive(:echo).
                                 with('docker -H=tcp://host1:2375 ' \
-                                     '--tlsverify ' \
+                                     '--tlsverify=true ' \
                                      '--tlscacert=/certs/ca.pem ' \
                                      '--tlscert=/certs/cert.pem ' \
                                      '--tlskey=/certs/key.pem pull foo:latest')
@@ -59,7 +59,7 @@ describe Centurion::DockerViaCli do
     it 'pulls an image given its name & tag' do
       expect(docker_via_cli).to receive(:echo).
                                 with('docker -H=tcp://host1:2375 ' \
-                                     '--tlsverify ' \
+                                     '--tlsverify=true ' \
                                      '--tlscacert=/certs/ca.pem ' \
                                      '--tlscert=/certs/cert.pem ' \
                                      '--tlskey=/certs/key.pem pull foo:bar')
@@ -70,7 +70,7 @@ describe Centurion::DockerViaCli do
       id = '12345abcdef'
       expect(docker_via_cli).to receive(:echo).
                                 with('docker -H=tcp://host1:2375 ' \
-                                     '--tlsverify ' \
+                                     '--tlsverify=true ' \
                                      '--tlscacert=/certs/ca.pem ' \
                                      '--tlscert=/certs/cert.pem ' \
                                      "--tlskey=/certs/key.pem logs -f #{id}")
@@ -81,7 +81,7 @@ describe Centurion::DockerViaCli do
       id = '12345abcdef'
       expect(docker_via_cli).to receive(:echo).
                                 with('docker -H=tcp://host1:2375 ' \
-                                     '--tlsverify ' \
+                                     '--tlsverify=true ' \
                                      '--tlscacert=/certs/ca.pem ' \
                                      '--tlscert=/certs/cert.pem ' \
                                      "--tlskey=/certs/key.pem attach #{id}")

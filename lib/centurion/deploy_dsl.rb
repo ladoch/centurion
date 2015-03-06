@@ -146,17 +146,11 @@ module Centurion::DeployDSL
     end
   end
 
-  def tls_paths_available?
-    Centurion::DockerViaCli.tls_keys.all? { |key| fetch(key).present? }
-  end
-
   def build_tls_params
-    return {} unless fetch(:tlsverify)
-    {
-      tls: fetch(:tlsverify || tls_paths_available?),
-      tlscacert: fetch(:tlscacert),
-      tlscert: fetch(:tlscert),
-      tlskey: fetch(:tlskey)
-    }
+    return {}.tap do |params|
+      Centurion::DockerViaCli.tls_keys.each do |key|
+        params[key] = fetch(key) if fetch(key)
+      end
+    end
   end
 end
