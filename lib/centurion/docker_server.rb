@@ -16,7 +16,7 @@ class Centurion::DockerServer
   def_delegators :docker_via_api, :create_container, :inspect_container,
                  :inspect_image, :ps, :start_container, :stop_container,
                  :old_containers_for_port, :remove_container
-  def_delegators :docker_via_cli, :pull, :tail, :attach
+  def_delegators :docker_via_cli, :pull, :tail, :attach, :login, :logout
 
   def initialize(host, docker_path, tls_params = {})
     @docker_path = docker_path

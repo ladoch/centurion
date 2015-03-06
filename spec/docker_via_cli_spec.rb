@@ -25,6 +25,22 @@ describe Centurion::DockerViaCli do
       docker_via_cli.tail(id)
     end
 
+    it 'login in repository' do
+      user = 'ladoch'
+      email = 'v@onlite.net'
+      pass = 'password'
+
+      expect(docker_via_cli).to receive(:echo).
+                                with("docker -H=tcp://host1:2375 login -e #{email} -u #{user} -p #{pass} https://registry.hub.docker.com")
+      docker_via_cli.login(user, email, pass)
+    end
+
+    it 'logout from repository' do
+      expect(docker_via_cli).to receive(:echo).
+                                with("docker -H=tcp://host1:2375 logout https://registry.hub.docker.com")
+      docker_via_cli.logout
+    end
+
     it 'should print all chars when one thread is running' do
       expect(docker_via_cli).to receive(:run_with_echo)
 

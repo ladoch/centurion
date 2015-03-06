@@ -500,4 +500,21 @@ describe Centurion::Deploy do
       expect(server).to have_received(:attach).with('shakespeare')
     end
   end
+
+  describe '#registry_login_required' do    
+    it 'returns false if credentials are incomplete' do      
+      expect(test_deploy).to receive(:fetch).with(:registry_user).and_return 'user'
+      expect(test_deploy).to receive(:fetch).with(:registry_email).and_return nil
+
+      expect(test_deploy.registry_login_required?).to be_falsey
+    end
+
+    it 'returns true if all credentials specified' do
+      expect(test_deploy).to receive(:fetch).with(:registry_user).and_return 'user'
+      expect(test_deploy).to receive(:fetch).with(:registry_password).and_return 'password'
+      expect(test_deploy).to receive(:fetch).with(:registry_email).and_return 'email'
+
+      expect(test_deploy.registry_login_required?).to be_truthy
+    end
+  end
 end
