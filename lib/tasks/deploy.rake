@@ -212,7 +212,7 @@ namespace :deploy do
       target_servers = Centurion::DockerServerGroup.new(hosts, docker_path,
                                                         build_tls_params)
       target_servers.each_in_parallel do |target_server|
-        if registry_login_required
+        if registry_login_required?
           target_server.login(
             fetch(:registry_user),
             fetch(:registry_email),
@@ -222,7 +222,7 @@ namespace :deploy do
 
         target_server.pull(fetch(:image), fetch(:tag))
 
-        if registry_login_required
+        if registry_login_required?
           target_server.logout
         end
       end
