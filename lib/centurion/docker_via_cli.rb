@@ -29,22 +29,13 @@ class Centurion::DockerViaCli
   private
 
   def self.tls_keys
-    [:tlscacert, :tlscert, :tlskey]
-  end
-
-  def all_tls_path_available?
-    self.class.tls_keys.all? { |key| @tls_args.key?(key) }
+    [:tlsverify, :tlscacert, :tlscert, :tlskey]
   end
 
   def tls_parameters
     return '' if @tls_args.nil? || @tls_args == {}
 
     tls_flags = ''
-
-    # --tlsverify can be set without passing the cacert, cert and key flags
-    if @tls_args[:tls] == true || all_tls_path_available?
-      tls_flags << ' --tlsverify'
-    end
 
     self.class.tls_keys.each do |key|
       tls_flags << " --#{key}=#{@tls_args[key]}" if @tls_args[key]

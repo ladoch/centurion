@@ -218,7 +218,7 @@ You just need to enable the tls mode as the following:
 
 ```ruby
   task :production => :common do
-    set :tls, true
+    set :tlsverify, true
     # ...
   end
 ```
@@ -232,6 +232,7 @@ You have to set the following keys:
 
 ```ruby
   task :production => :common do
+    set :tlsverify, true #optional
     set :tlscacert, '/usr/local/certs/ca.pem'
     set :tlscert, '/usr/local/certs/ssl.crt'
     set :tlskey, '/usr/local/certs/ssl.key'
