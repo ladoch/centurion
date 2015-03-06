@@ -37,6 +37,10 @@ class Centurion::DockerViaCli
 
     tls_flags = ''
 
+    if @tls_args[:tls] == true
+      tls_flags << ' --tls=true'
+    end
+
     self.class.tls_keys.each do |key|
       tls_flags << " --#{key}=#{@tls_args[key]}" if @tls_args[key]
     end
