@@ -99,11 +99,11 @@ module Centurion::DeployDSL
       hostOptions[:env_vars] = options[:env_vars] if options[:env_vars]
 
       if options[:port_bindings]
-        validate_options_keys(options[:port_bindings], [ :container_port, :port, :type, :host_ip ])
-        require_options_keys(options[:port_bindings], [ :container_port, :port ])
-
         hostOptions[:port_bindings] = port_bindings = {}
         options[:port_bindings].each do |port, params|
+          validate_options_keys(params, [ :container_port, :type, :host_ip ])
+          require_options_keys(params, [ :container_port ])
+
           binding = host_port_binding_from(
             params[:host_ip],
             params[:container_port],
