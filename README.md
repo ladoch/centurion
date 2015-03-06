@@ -366,11 +366,13 @@ supported in both the config file and also as command line arguments.
 The command line arguments are: 
  * `--registry-user` => The username to pass to the registry
  * `--registry-password` => The password
+ * `--registry-email` => The email
 
 These correspond to the following settings:
 
  * `registry_user`
  * `registry_password`
+ * `registry_email`
 
 #### Alternative Docker Registry
 

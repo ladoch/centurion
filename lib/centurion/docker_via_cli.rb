@@ -12,6 +12,18 @@ class Centurion::DockerViaCli
     @tls_args = tls_args
   end
 
+  def login(registry_user, registry_email, registry_password)
+    info "Authorize host in registry to pull images."
+    params = "-e #{registry_email} -u #{registry_user} -p #{registry_password} https://registry.hub.docker.com"
+    echo(build_command(:login, params))
+  end
+
+  def logout
+    info "Authorize host in registry to pull images."
+    params = "https://registry.hub.docker.com"
+    echo(build_command(:logout, params))    
+  end
+
   def pull(image, tag='latest')
     info 'Using CLI to pull'
     echo(build_command(:pull, "#{image}:#{tag}"))
@@ -55,6 +67,8 @@ class Centurion::DockerViaCli
                when :pull then ' pull '
                when :logs then ' logs -f '
                when :attach then ' attach '
+               when :login then ' login '  
+               when :logout then   ' logout ' 
                end
     command << destination
     command

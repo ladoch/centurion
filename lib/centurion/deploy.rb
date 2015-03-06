@@ -170,6 +170,10 @@ module Centurion::Deploy
     target_server.attach(container['Id'])
   end
 
+  def registry_login_required?
+    [:registry_user, :registry_email, :registry_password].all? { |k| fetch(k)  }
+  end
+
   private
 
   # By default we always use on-failure policy.

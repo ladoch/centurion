@@ -32,6 +32,7 @@ opts = Trollop::options do
   opt :no_pull,          'Skip the pull_image step',             type: :flag,  default: false, short: '-n'
   opt :registry_user,    'user for registry auth',               type: String, short: :none
   opt :registry_password,'password for registry auth',           type: String, short: :none
+  opt :registry_email,   'email for registry auth',              type: String, short: :none
   opt :override_env,     'override environment variables, comma separated', type: String
 end
 
@@ -75,5 +76,6 @@ set :docker_path, opts[:docker_path]
 set :no_pull, opts[:no_pull_given]
 set :registry_user, opts[:registry_user] if opts[:registry_user]
 set :registry_password, opts[:registry_password] if opts[:registry_password]
+set :registry_email, opts[:registry_email] if opts[:registry_email]
 
 invoke(opts[:action])

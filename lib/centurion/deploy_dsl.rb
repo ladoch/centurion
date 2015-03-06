@@ -155,4 +155,8 @@ module Centurion::DeployDSL
       unless params[:tlsverify] || params == {} then params[:tls] = true end
     end
   end
+
+  def should_docker_login
+    [:registry_user, :registry_email, :registry_password].all? { |k| has_key?(k) }
+  end
 end
