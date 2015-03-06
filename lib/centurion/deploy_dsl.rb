@@ -152,7 +152,7 @@ module Centurion::DeployDSL
         params[key] = fetch(key) if fetch(key)
       end
 
-      unless params[:tlsverify] || params == {} then params[:tls] = true
+      unless params[:tlsverify] || params == {} then params[:tls] = true end
     end
   end
 end
