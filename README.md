@@ -1,4 +1,4 @@
-Centurion
+Centurion [![wercker status](https://app.wercker.com/status/054fec3608ff0ba834fca8223e43621b/s "wercker status")](https://app.wercker.com/project/bykey/054fec3608ff0ba834fca8223e43621b)
 =========
 
 A deployment tool for Docker. Takes containers from a Docker registry and runs
