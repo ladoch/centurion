@@ -1,0 +1,8 @@
+box: wercker/rvm
+
+build:
+	steps: 
+		- bundle-install
+		- script:
+	        name: rake
+	        code: bundle exec rake
